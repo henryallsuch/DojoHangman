@@ -4,13 +4,18 @@ import Foundation
 class Hangman {
     
     let totalNumberOfGuesses = 3
-    var numberOfGuessesLeft = 3
+    var numberOfGuessesLeft : Int
+    let wordToGuess : String
     
-//    init() {
-//
-//        numberOfGuessesLeft = totalNumberOfGuesses
-//
-//    }
+    public var wordLength : Int = 0
+    
+    init(_ word : String) {
+        
+        self.wordToGuess = word
+        self.wordLength = word.count
+        self.numberOfGuessesLeft = self.totalNumberOfGuesses
+
+    }
     func makeAGuess(_ Letter : String) -> Bool {
         
         return wordToGuess.contains(Letter)
@@ -39,12 +44,12 @@ class Hangman {
 class Player {
     
     var misses:[String] = []
-    var hits:[String] = []
+    var hits = [Int: String]()
     
-    var wordLength : Int = 0
+    var currentGame : Hangman
     
-    init(_ length: Int) {
-        self.wordLength = length
+    init(_ game: Hangman) {
+        self.currentGame = game
     }
     
     func generateGuess() -> String {
@@ -54,24 +59,24 @@ class Player {
     }
     
     func recordTheResult(_ result:Bool, forGuess: String) {
-    
-    
+        
+        print(result)
+        
+        if(result){
+            
+           // hits.append(String)
+            
+        } else {
+            
+            misses.append(forGuess)
+        }
     }
-    
-    func recordWordLength(_ length: Int){
-        self.wordLength = length
-    }
-    
-    
-    
+
 }
 
-let wordToGuess = "cat"
-let wordLength = wordToGuess.count
+var newGame = Hangman("cat")
 
-var newGame = Hangman()
-
-let player = Player(wordLength)
+let player = Player(newGame)
 
 while !newGame.isGameOver()  {
     
