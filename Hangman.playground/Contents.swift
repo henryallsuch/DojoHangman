@@ -9,25 +9,47 @@ struct Answer {
     var atIndex: String.Index? = nil
 }
 
+typealias ClosureType = (_ responseData:Any?) -> Void
+
 class Hangman {
     
-    let totalNumberOfGuesses = 3
-    var numberOfGuessesLeft : Int
-    let wordToGuess : String
+//    var numberOfGuessesLeft : Int = 0
+//    let wordToGuess : String
+    
+    let api = Api()
+    
+    var misses:[Character] = []
+    var hits = [Int: String]()
     
     public var wordLength : Int = 0
     
-    init(_ word : String) {
+    var currentPlayer : Player
+    
+    init(_ player: Player) {
         
-        self.wordToGuess = word
-        self.wordLength = word.count
-        self.numberOfGuessesLeft = self.totalNumberOfGuesses
-
+        self.currentPlayer = player
+        
+        if(api.token == ""){
+            
+            print("login!")
+            
+            api.login(player.credentials)
+            
+        }
     }
+    
+   // init() {
+        
+        
+    //api.getCurrentGameOrStartNewOne()
+        
+        //self.wordToGuess = word
+       // self.wordLength = word.count
+       //get current game object
+
+    //}
     func makeAGuess(_ Letter : Character) -> Answer {
         
-        
-        let api = Api()
         
         api.makeAGuess(String(Letter))
         
@@ -37,40 +59,33 @@ class Hangman {
 //
 //        }
 //
-//        return Answer(found:false, atIndex: nil)
+
         return Answer(found:false, atIndex: nil)
     
     }
     
-    func isGameOver() -> Bool{
-        
-        if(self.numberOfGuessesLeft == 0){
-            
-            return true;
-            
-        } else {
-            
-            self.numberOfGuessesLeft -= 1
-            
-            return false
-            
-        }
-    
-    }
+//    func isGameOver() -> Bool {
+//
+//        if(self.numberOfGuessesLeft == 0){
+//
+//            return true;
+//
+//        } else {
+//
+//            self.numberOfGuessesLeft -= 1
+//
+//            return false
+//
+//        }
+//
+//    }
 
     
 }
 
 class Player {
     
-    var misses:[Character] = []
-    var hits = [Int: String]()
-    
-    var currentGame : Hangman
-    
-    init(_ game: Hangman) {
-        self.currentGame = game
-    }
+    let credentials = ["username": "jazz", "password": "apple"]
     
     func generateGuess() -> Character {
         
@@ -80,31 +95,53 @@ class Player {
     
     func recordTheResult(_ result:Answer, forGuess: Character) {
         
-        print(result.found)
-        
-        if(result.found){
-            
-          // hits.append(forGuess)
-            
-        } else {
-            
-            misses.append(forGuess)
-        }
+//        print(result.found)
+//
+//        if(result.found){
+//
+//          // hits.append(forGuess)
+//
+//        } else {
+//
+//           // misses.append(forGuess)
+//        }
     }
 
 }
 
 class Api {
     
-    let endpointUrl :String = "https://dojo-hangman-server.herokuapp.com/api/games/current"
+    let apiUrl : String = "https://dojo-hangman-server.herokuapp.com/api/"
     
-    var scheme: String = ""
-    var baseUrl: String = ""
+    var token : String = ""
     
-    var token : String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhY2U1MWRiNWU3OTM4MDAxNDBhMjYwNyIsImlhdCI6MTUyMzQ3MDkzMCwiZXhwIjoxNTIzNTU3MzMwfQ.cxsvZYSkW0nk7qa0kckhj7fgXmCC0ooU1CsjARK09nM"
-    
-    func login(){
-    
+    func login(_ credentials : [String : Any]){
+        
+        do {
+            
+        let postData = try JSONSerialization.data(withJSONObject: credentials, options: [])
+        let requestBody = postData as Data
+            
+        if let guessUrl = NSURL(string: apiUrl + "auth/login" ) {
+            
+            self.makeRequest(method: "POST", url: guessUrl, body: requestBody, onSuccess: {
+                
+                (responseData: Any?) in
+                
+                print(responseData!)
+                
+                //check for token & save
+                
+            })
+        }
+            
+         } catch {
+            
+            print("failed to parse json 1")
+            
+        }
+        
+        
     }
     
     func newGame(){
@@ -116,28 +153,30 @@ class Api {
         let parameters = ["letter":Letter] as [String : Any]
         
         do {
+            
             let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
-            
             let requestBody = postData as Data
-            
-            makeRequest(method: "PATCH", body: requestBody)
+            if let guessUrl = NSURL(string: apiUrl + "game/current" ) {
+                
+                    self.makeRequest(method: "PATCH", url: guessUrl, body: requestBody, onSuccess: {
+                            (responseData:Any?) in
+                        //
+                       // print(responseData!)
+                
+                    })
+            }
             
         } catch {
            print("failed to parse json")
         }
-    
-       
         
     }
     
-    func makeRequest( method :String, body : Data ){
+    func makeRequest( method :String, url : NSURL, body : Data, onSuccess successCallback : @escaping ClosureType ){
         
-        let headers = [
-            "Content-Type": "application/json",
-            "x-access-token": token
-        ]
+        let headers = ["Content-Type": "application/json", "x-access-token": token]
         
-        let request = NSMutableURLRequest(url: NSURL(string: endpointUrl)! as URL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
+        let request = NSMutableURLRequest(url: url as URL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
         
         request.httpMethod = method
         request.allHTTPHeaderFields = headers
@@ -151,9 +190,8 @@ class Api {
             
             if let data = data, let contents = String(data: data, encoding: String.Encoding.utf8) {
                 
-                print(contents)
+                successCallback(contents)
                 
-                //return contents
             }
         }
         task.resume()
@@ -172,14 +210,14 @@ class Words {
 }
 
 
-var newGame = Hangman("cat")
-let player = Player(newGame)
 
+let player = Player()
+var newGame = Hangman(player)
 
 //while !newGame.isGameOver()  {
 //
 //   let guess = player.generateGuess()
-//    player.recordTheResult(newGame.makeAGuess(guess), forGuess: guess)
+//   player.recordTheResult(newGame.makeAGuess(guess), forGuess: guess)
 //
 //}
 
