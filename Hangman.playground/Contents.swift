@@ -9,8 +9,6 @@ struct Answer {
     var atIndex: String.Index? = nil
 }
 
-
-
 class Hangman {
     
     let totalNumberOfGuesses = 3
@@ -31,7 +29,7 @@ class Hangman {
         
         let api = Api()
         
-        api.makeGuess()
+        api.makeAGuess(String(Letter))
         
 //        if let index = wordToGuess.index(of: Letter) {
 //
@@ -98,7 +96,7 @@ class Player {
 
 class Api {
     
-    //let endpointUrl
+    let endpointUrl :String = "https://dojo-hangman-server.herokuapp.com/api/games/current"
     
     var scheme: String = ""
     var baseUrl: String = ""
@@ -109,9 +107,13 @@ class Api {
     
     }
     
-    func makeGuess(){
+    func newGame(){
         
-        let parameters = ["letter": "z"] as [String : Any]
+    }
+    
+    func makeAGuess(_ Letter : String){
+        
+        let parameters = ["letter":Letter] as [String : Any]
         
         do {
             let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
@@ -130,13 +132,12 @@ class Api {
     
     func makeRequest( method :String, body : Data ){
         
-        
         let headers = [
             "Content-Type": "application/json",
             "x-access-token": token
         ]
         
-        let request = NSMutableURLRequest(url: NSURL(string: "https://dojo-hangman-server.herokuapp.com/api/games/current")! as URL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
+        let request = NSMutableURLRequest(url: NSURL(string: endpointUrl)! as URL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
         
         request.httpMethod = method
         request.allHTTPHeaderFields = headers
@@ -149,7 +150,10 @@ class Api {
             }
             
             if let data = data, let contents = String(data: data, encoding: String.Encoding.utf8) {
+                
                 print(contents)
+                
+                //return contents
             }
         }
         task.resume()
@@ -157,18 +161,26 @@ class Api {
     }
 }
 
+class Words {
+    func filterByLength(){
+        
+    }
+    func suggestLetter(){
+        
+    }
+    
+}
+
 
 var newGame = Hangman("cat")
-
 let player = Player(newGame)
 
 
-
-while !newGame.isGameOver()  {
-
-   let guess = player.generateGuess()
-    player.recordTheResult(newGame.makeAGuess(guess), forGuess: guess)
-
-}
+//while !newGame.isGameOver()  {
+//
+//   let guess = player.generateGuess()
+//    player.recordTheResult(newGame.makeAGuess(guess), forGuess: guess)
+//
+//}
 
 
