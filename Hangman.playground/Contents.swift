@@ -203,8 +203,16 @@ class Api {
             
             if let data = data, let jsonString = String(data: data, encoding: String.Encoding.utf8) {
                 
-              
-                   successCallback(jsonString)
+                do {
+                    print(jsonString)
+                    try successCallback(jsonString)
+                    
+                } catch {
+                    print("failed")
+                    print(error)
+                    
+                }
+                
                 
             
             }
