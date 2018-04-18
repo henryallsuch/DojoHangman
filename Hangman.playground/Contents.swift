@@ -9,7 +9,11 @@ struct Answer {
     var atIndex: String.Index? = nil
 }
 
-typealias ClosureType = (_ responseData:Any?) -> Void
+struct LoginResponse: Codable {
+    var token: String
+}
+
+typealias ClosureType = (_ responseData:Any?) throws -> Void
 
 class Hangman {
     
@@ -128,7 +132,16 @@ class Api {
                 
                 (responseData: Any?) in
                 
-                print(responseData!)
+                let decoder = JSONDecoder()
+                
+              
+                let loginResponse = try decoder.decode(LoginResponse.self, from: responseData as! Data)
+                    
+                print(loginResponse)
+            
+                //if(loginResponse.token.is){
+                 //  print(self.token)
+               // }
                 
                 //check for token & save
                 
@@ -188,10 +201,12 @@ class Api {
                 return
             }
             
-            if let data = data, let contents = String(data: data, encoding: String.Encoding.utf8) {
+            if let data = data, let jsonString = String(data: data, encoding: String.Encoding.utf8) {
                 
-                successCallback(contents)
+              
+                   successCallback(jsonString)
                 
+            
             }
         }
         task.resume()
