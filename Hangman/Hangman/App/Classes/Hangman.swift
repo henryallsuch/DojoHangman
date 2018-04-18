@@ -41,9 +41,6 @@ class Hangman {
     
     }
     
-    // init() {
-    
-    
     //api.getCurrentGameOrStartNewOne()
     
     //self.wordToGuess = word

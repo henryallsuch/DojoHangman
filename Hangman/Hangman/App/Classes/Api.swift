@@ -29,14 +29,11 @@ class Api {
                     let decoder = JSONDecoder()
                     
                     let loginResponse = try decoder.decode(LoginResponse.self, from: responseData as! Data)
-                    
-                    print(loginResponse)
-                    
-                    //if(loginResponse.token.is){
-                    //  print(self.token)
-                    // }
-                    
-                    //check for token & save
+                        
+                    self.token = loginResponse.token
+                
+                    print(loginResponse.token)
+
                     
                 })
             }
@@ -94,21 +91,16 @@ class Api {
                 return
             }
             
-            if let data = data, let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                
                 do {
-                    print(jsonString)
-                    try successCallback(jsonString)
+       
+                    try successCallback(data)
                     
                 } catch {
                     print("failed")
                     print(error)
                     
                 }
-                
-                
-                
-            }
+        
         }
         task.resume()
         
