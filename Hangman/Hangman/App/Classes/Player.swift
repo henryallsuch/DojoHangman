@@ -8,7 +8,29 @@ struct Answer {
 
 class Player {
     
+    var currentGame : Hangman?
+    
     let credentials = ["username": "jazz", "password": "apple"]
+    
+    func play(_ game : Hangman) {
+    
+        currentGame = game
+        currentGame?.loginWithPlayer(self, onSuccess: {
+            print("player logged in")
+            self.makeAGuess()
+            
+        })
+        
+    }
+    
+    func makeAGuess(){
+        
+        if let wasCorrect : Answer = currentGame?.makeAGuess(generateGuess()) {
+            
+            print(wasCorrect)
+        }
+        
+    }
     
     func generateGuess() -> Character {
         

@@ -1,34 +1,61 @@
 
 import Foundation
+import UIKit
 
 class Hangman {
     
-    //    var numberOfGuessesLeft : Int = 0
-    //    let wordToGuess : String
+    typealias ClosureWithParams = (_ responseData:Any?) throws -> Void
+    typealias ClosureWithNoParams = () throws -> Void
     
     let api = Api()
     
     var misses:[Character] = []
     var hits = [Int: String]()
+    let console : UITextView
     
     public var wordLength : Int = 0
     
-    var currentPlayer : Player
-    
-    init(_ player: Player) {
+    init(console : UITextView) {
         
-        self.currentPlayer = player
+        self.console = console
+        logToView("New Game", clearAllText:true);
         
-        if(api.token == ""){
-            
-            print("login!")
-            
-            api.login(player.credentials)
-            
-        }
     }
     
-    func play (){
+    func loginWithPlayer(_ player: Player, onSuccess successCallback : @escaping ClosureWithNoParams) {
+
+        if(api.token == ""){
+            
+            logToView("Attempting login..");
+            
+            api.login(player.credentials, onSuccess: {_ in
+                
+                self.logToView("Success!");
+                do {
+                    try successCallback()
+                }
+                catch {
+
+                    print(error)
+
+                }
+            })
+            
+        } else {
+       
+           logToView("Already have token");
+            do { try successCallback() }
+            catch {
+              
+                print(error)
+                
+            }
+        }
+
+        
+    }
+    
+    func play(){
         
         print("play")
         
@@ -51,7 +78,16 @@ class Hangman {
     func makeAGuess(_ Letter : Character) -> Answer {
         
         
-        api.makeAGuess(String(Letter))
+        api.makeAGuess(String(Letter), onSuccess: {
+            (responseData:Any?) in
+            
+            
+            print(responseData!)
+            if let currentGame = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
+                self.logToView(currentGame)
+            }
+            
+        })
         
         //        if let index = wordToGuess.index(of: Letter) {
         //
@@ -64,21 +100,19 @@ class Hangman {
         
     }
     
-    //    func isGameOver() -> Bool {
-    //
-    //        if(self.numberOfGuessesLeft == 0){
-    //
-    //            return true;
-    //
-    //        } else {
-    //
-    //            self.numberOfGuessesLeft -= 1
-    //
-    //            return false
-    //
-    //        }
-    //
-    //    }
-    
+    func logToView(_ message :String, clearAllText: Bool? = nil){
+        
+        //always update UI in main thread!
+        DispatchQueue.main.async {
+            
+            if clearAllText != nil {
+                self.console.text = ""
+            }
+            self.console.text.append(message);
+            self.console.text.append("\n");
+            print(message)
+            
+        }
+    }
     
 }

@@ -13,7 +13,7 @@ class Api {
     
     var token : String = ""
     
-    func login(_ credentials : [String : Any]){
+    func login(_ credentials : [String : Any], onSuccess successCallback : @escaping ClosureType){
         
         do {
             
@@ -31,8 +31,16 @@ class Api {
                     let loginResponse = try decoder.decode(LoginResponse.self, from: responseData as! Data)
                         
                     self.token = loginResponse.token
-                
-                    print(loginResponse.token)
+                    
+                    do {
+                        
+                        try successCallback(loginResponse)
+                        
+                    } catch {
+                        print("failed to call success callback")
+                        print(error)
+                        
+                    }
 
                     
                 })
@@ -51,7 +59,7 @@ class Api {
         
     }
     
-    func makeAGuess(_ Letter : String){
+    func makeAGuess(_ Letter : String, onSuccess successCallback : @escaping ClosureType){
         
         let parameters = ["letter":Letter] as [String : Any]
         
@@ -63,8 +71,13 @@ class Api {
                 
                 self.makeRequest(method: "PATCH", url: guessUrl, body: requestBody, onSuccess: {
                     (responseData:Any?) in
-                    //
-                    // print(responseData!)
+                    do {
+                        try successCallback(responseData!)
+                    } catch {
+                        print("callback failed")
+                        print(error)
+                        
+                    }
                     
                 })
             }
