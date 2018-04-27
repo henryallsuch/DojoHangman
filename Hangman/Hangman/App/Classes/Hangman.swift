@@ -11,14 +11,14 @@ class Hangman {
     
     var misses:[Character] = []
     var hits = [Int: String]()
-    let console : UITextView
+    let console : ViewController
     
     public var wordLength : Int = 0
     
-    init(console : UITextView) {
+    init(console : ViewController) {
         
         self.console = console
-        logToView("Init", clearAllText:true);
+        self.console.logToView("Init", clearAllText:true);
         
     }
     
@@ -26,11 +26,11 @@ class Hangman {
 
         if(api.token == ""){
             
-            logToView("Attempting login..");
+            self.console.logToView("Attempting login..");
             
             api.login(player.credentials, onSuccess: {_ in
                 
-                self.logToView("Success!");
+                self.console.logToView("Success!");
                 do {
                     try successCallback()
                 }
@@ -43,7 +43,7 @@ class Hangman {
             
         } else {
        
-           logToView("Already have token");
+           self.console.logToView("Already have token");
             do { try successCallback() }
             catch {
               
@@ -60,24 +60,7 @@ class Hangman {
         api.currentGame(onSuccess: {
             (gameState : Any?) in
         
-            let currentGame = gameState as! GameState
-
-                if(currentGame.complete == true){
-
-                    
-                     self.logToView("Game Over")
-                    
-                     self.newGame()
-                    
-                } else {
-
-                     print(currentGame.lettersGuessed)
-                     print(currentGame.progress)
-
-
-                }
-
-            
+            self.parseGameState(gameState)
             
         })
         
@@ -98,30 +81,38 @@ class Hangman {
     
     //}
     
+    func parseGameState(_ gameState : Any?){
+        
+        let currentGame = gameState as! GameState
+        
+        if(currentGame.complete == true){
+            
+            self.console.logToView("Unable to make new game")
+            
+        } else {
+            
+            print(currentGame.lettersGuessed)
+            print(currentGame.progress)
+            
+            
+        }
+        
+        self.console.logGameState(currentGame)
+        
+    }
+    
     func newGame (){
         
         api.newGame(onSuccess: {
             (gameState : Any?) in
             
-            let currentGame = gameState as! GameState
-            
-            if(currentGame.complete == true){
-                
-                self.logToView("Unable to make new game")
-                
-            } else {
-                
-                print(currentGame.lettersGuessed)
-                print(currentGame.progress)
-                
-                
-            }
-            
+            self.parseGameState(gameState)
             
             
         })
         
     }
+    
     
     func makeAGuess(_ Letter : Character) -> Answer {
         
@@ -132,7 +123,7 @@ class Hangman {
             
             print(responseData!)
             if let currentGame = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
-                self.logToView(currentGame)
+                self.console.logToView(currentGame)
             }
             
         })
@@ -148,19 +139,5 @@ class Hangman {
         
     }
     
-    func logToView(_ message :String, clearAllText: Bool? = nil){
-        
-        //always update UI in main thread!
-        DispatchQueue.main.async {
-            
-            if clearAllText != nil {
-                self.console.text = ""
-            }
-            self.console.text.append(message);
-            self.console.text.append("\n");
-            print(message)
-            
-        }
-    }
     
 }
