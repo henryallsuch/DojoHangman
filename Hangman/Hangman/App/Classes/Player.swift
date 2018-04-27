@@ -16,8 +16,11 @@ class Player {
     
         currentGame = game
         currentGame?.loginWithPlayer(self, onSuccess: {
+            
             print("player logged in")
-            self.makeAGuess()
+            
+            self.currentGame?.play()
+            //self.makeAGuess()
             
         })
         

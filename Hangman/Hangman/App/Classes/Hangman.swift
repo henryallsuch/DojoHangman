@@ -59,6 +59,8 @@ class Hangman {
         
         print("play")
         
+        api.currentGame()
+        
         //while !newGame.isGameOver()  {
         //
         //   let guess = player.generateGuess()

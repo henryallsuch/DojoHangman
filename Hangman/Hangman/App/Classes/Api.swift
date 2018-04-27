@@ -5,6 +5,15 @@ struct LoginResponse: Codable {
     var token: String
 }
 
+struct GameState: Codable {
+    var id: String
+    var lettersGuessed: [String]
+    var progress : [String?]
+    var misses : Int
+    var complete : Bool
+    var won : Bool
+}
+
 typealias ClosureType = (_ responseData:Any?) throws -> Void
 
 class Api {
@@ -55,7 +64,50 @@ class Api {
         
     }
     
+    func currentGame(){
+       // do {
+            
+           
+            if let guessUrl = NSURL(string: apiUrl + "games/current" ) {
+                
+                self.makeRequest(method: "GET", url: guessUrl, body: nil, onSuccess: {
+                    
+                    (responseData: Any?) in
+                    
+                    if let debugString = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
+                        print(debugString)
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    
+                    let currentGame = try decoder.decode(GameState.self, from: responseData as! Data)
+                    
+                   print(currentGame)
+                    
+//                    do {
+//
+//                        try //successCallback(loginResponse)
+//
+//                    } catch {
+//                        print("failed to call success callback")
+//                        print(error)
+//
+//                    }
+                    
+                    
+                })
+            }
+            
+//        } catch {
+//
+//            print("failed to parse json 1")
+//
+//        }
+    }
+    
     func newGame(){
+        
+        
         
     }
     
@@ -66,6 +118,7 @@ class Api {
         do {
             
             let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
+            
             let requestBody = postData as Data
             if let guessUrl = NSURL(string: apiUrl + "game/current" ) {
                 
@@ -88,7 +141,7 @@ class Api {
         
     }
     
-    func makeRequest( method :String, url : NSURL, body : Data, onSuccess successCallback : @escaping ClosureType ){
+    func makeRequest( method :String, url : NSURL, body : Data?, onSuccess successCallback : @escaping ClosureType ){
         
         let headers = ["Content-Type": "application/json", "x-access-token": token]
         
@@ -96,7 +149,10 @@ class Api {
         
         request.httpMethod = method
         request.allHTTPHeaderFields = headers
-        request.httpBody = body
+        
+        if(body != nil){
+            request.httpBody = body
+        }
         
         let task = URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
             guard error == nil else {
