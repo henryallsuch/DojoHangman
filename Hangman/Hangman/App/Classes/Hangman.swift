@@ -18,7 +18,7 @@ class Hangman {
     init(console : UITextView) {
         
         self.console = console
-        logToView("New Game", clearAllText:true);
+        logToView("Init", clearAllText:true);
         
     }
     
@@ -57,9 +57,29 @@ class Hangman {
     
     func play(){
         
-        print("play")
+        api.currentGame(onSuccess: {
+            (gameState : Any?) in
         
-        api.currentGame()
+            let currentGame = gameState as! GameState
+
+                if(currentGame.complete == true){
+
+                    
+                     self.logToView("Game Over")
+                    
+                     self.newGame()
+                    
+                } else {
+
+                     print(currentGame.lettersGuessed)
+                     print(currentGame.progress)
+
+
+                }
+
+            
+            
+        })
         
         //while !newGame.isGameOver()  {
         //
@@ -77,6 +97,32 @@ class Hangman {
     //get current game object
     
     //}
+    
+    func newGame (){
+        
+        api.newGame(onSuccess: {
+            (gameState : Any?) in
+            
+            let currentGame = gameState as! GameState
+            
+            if(currentGame.complete == true){
+                
+                self.logToView("Unable to make new game")
+                
+            } else {
+                
+                print(currentGame.lettersGuessed)
+                print(currentGame.progress)
+                
+                
+            }
+            
+            
+            
+        })
+        
+    }
+    
     func makeAGuess(_ Letter : Character) -> Answer {
         
         

@@ -5,15 +5,6 @@ struct LoginResponse: Codable {
     var token: String
 }
 
-struct GameState: Codable {
-    var id: String
-    var lettersGuessed: [String]
-    var progress : [String?]
-    var misses : Int
-    var complete : Bool
-    var won : Bool
-}
-
 typealias ClosureType = (_ responseData:Any?) throws -> Void
 
 class Api {
@@ -64,10 +55,9 @@ class Api {
         
     }
     
-    func currentGame(){
-       // do {
+    func currentGame(onSuccess successCallback : @escaping ClosureType){
+       
             
-           
             if let guessUrl = NSURL(string: apiUrl + "games/current" ) {
                 
                 self.makeRequest(method: "GET", url: guessUrl, body: nil, onSuccess: {
@@ -82,32 +72,51 @@ class Api {
                     
                     let currentGame = try decoder.decode(GameState.self, from: responseData as! Data)
                     
-                   print(currentGame)
-                    
-//                    do {
-//
-//                        try //successCallback(loginResponse)
-//
-//                    } catch {
-//                        print("failed to call success callback")
-//                        print(error)
-//
-//                    }
+                    do {
+
+                        try successCallback(currentGame)
+
+                    } catch {
+                        print("failed to call success callback")
+                        print(error)
+
+                    }
                     
                     
                 })
             }
-            
-//        } catch {
-//
-//            print("failed to parse json 1")
-//
-//        }
+        
     }
     
-    func newGame(){
+    func newGame(onSuccess successCallback : @escaping ClosureType){
         
-        
+        if let guessUrl = NSURL(string: apiUrl + "games" ) {
+            
+            self.makeRequest(method: "POST", url: guessUrl, body: nil, onSuccess: {
+                
+                (responseData: Any?) in
+                
+                if let debugString = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
+                    print(debugString)
+                }
+                
+                let decoder = JSONDecoder()
+                
+                let currentGame = try decoder.decode(GameState.self, from: responseData as! Data)
+                
+                do {
+                    
+                    try successCallback(currentGame)
+                    
+                } catch {
+                    print("failed to call success callback")
+                    print(error)
+                    
+                }
+                
+                
+            })
+        }
         
     }
     
