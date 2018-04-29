@@ -12,47 +12,52 @@ class Player {
     
     let credentials = ["username": "jazz", "password": "apple"]
     
+    var brain : Brain = Brain()
+    
     func play(_ game : Hangman) {
     
         currentGame = game
         currentGame?.loginWithPlayer(self, onSuccess: {
             
-            print("player logged in")
-            
             self.currentGame?.play()
-            //self.makeAGuess()
-            
+           
         })
         
     }
     
-    func makeAGuess(){
+    func parseGameState(_ gameState : GameState){
         
-        if let wasCorrect : Answer = currentGame?.makeAGuess(generateGuess()) {
+        let letterCount = gameState.progress.count
+        
+        let nilCount = gameState.progress.reduce(0) { $0 + ($1 == nil ? 1 : 0) }
+        
+        if(nilCount == letterCount){
             
-            print(wasCorrect)
+             let letterToGuess = self.brain.optimalGuess(forLetterCount: letterCount)
+            
+            currentGame?.makeAGuess(letterToGuess)
+            
+        } else {
+            
+            print("got a letter!")
+            
         }
         
+//        if(currentGame.misses == 0 or nilCount = letterCount){
+//
+//           let letterToGuess = self.brain.optimalGuess(forLetterCount: letterCount)
+//
+//        } else {
+//
+//        }
+        // self.brain.makeAGuess()
     }
+//    
+//    func makeAGuess(){
+//        
+//        currentGame?.makeAGuess(self.brain.generateGuess())
+//        
+//    }
     
-    func generateGuess() -> Character {
-        
-        let firstGuess:Character = "a"
-        return firstGuess
-    }
-    
-    func recordTheResult(_ result:Answer, forGuess: Character) {
-        
-        //        print(result.found)
-        //
-        //        if(result.found){
-        //
-        //          // hits.append(forGuess)
-        //
-        //        } else {
-        //
-        //           // misses.append(forGuess)
-        //        }
-    }
     
 }

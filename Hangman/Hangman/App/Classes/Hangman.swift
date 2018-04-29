@@ -13,6 +13,8 @@ class Hangman {
     var hits = [Int: String]()
     let console : ViewController
     
+    var currentPlayer : Player? = nil
+    
     public var wordLength : Int = 0
     
     init(console : ViewController) {
@@ -28,11 +30,15 @@ class Hangman {
             
             self.console.logToView("Attempting login..");
             
+            currentPlayer = player
+            
             api.login(player.credentials, onSuccess: {_ in
                 
                 self.console.logToView("Success!");
                 do {
                     try successCallback()
+                    
+                    
                 }
                 catch {
 
@@ -64,44 +70,10 @@ class Hangman {
             
         })
         
-        //while !newGame.isGameOver()  {
-        //
-        //   let guess = player.generateGuess()
-        //   player.recordTheResult(newGame.makeAGuess(guess), forGuess: guess)
-        //
-        //}
     
     }
     
-    //api.getCurrentGameOrStartNewOne()
-    
-    //self.wordToGuess = word
-    // self.wordLength = word.count
-    //get current game object
-    
-    //}
-    
-    func parseGameState(_ gameState : Any?){
-        
-        let currentGame = gameState as! GameState
-        
-        if(currentGame.complete == true){
-            
-            self.console.logToView("Unable to make new game")
-            
-        } else {
-            
-            print(currentGame.lettersGuessed)
-            print(currentGame.progress)
-            
-            
-        }
-        
-        self.console.logGameState(currentGame)
-        
-    }
-    
-    func newGame (){
+    func newGame(){
         
         api.newGame(onSuccess: {
             (gameState : Any?) in
@@ -113,29 +85,33 @@ class Hangman {
         
     }
     
-    
-    func makeAGuess(_ Letter : Character) -> Answer {
-        
+    func makeAGuess(_ Letter : String)  {
         
         api.makeAGuess(String(Letter), onSuccess: {
-            (responseData:Any?) in
+            (gameState:Any?) in
             
-            
-            print(responseData!)
-            if let currentGame = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
-                self.console.logToView(currentGame)
-            }
+            self.parseGameState(gameState)
             
         })
         
-        //        if let index = wordToGuess.index(of: Letter) {
-        //
-        //            return Answer(found:true, atIndex: index)
-        //
-        //        }
-        //
+    }
+    
+    func parseGameState(_ gameState : Any?){
         
-        return Answer(found:false, atIndex: nil)
+        let currentGame = gameState as! GameState
+        
+        if(currentGame.complete == true){
+            
+            self.console.logToView("Game Over")
+            
+        } else {
+            
+            self.currentPlayer?.parseGameState(currentGame)
+            
+            self.console.logGameState(currentGame)
+            
+        }
+        
         
     }
     

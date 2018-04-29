@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1A97A5022093DBAB002BA274 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A97A5012093DBAB002BA274 /* GameState.swift */; };
+		1A97A5042093E7CC002BA274 /* Brain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A97A5032093E7CC002BA274 /* Brain.swift */; };
+		1A97A50920966B1D002BA274 /* Wolfram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A97A50820966B1D002BA274 /* Wolfram.swift */; };
 		1A9DC94F2087DDE90045C59D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9DC94E2087DDE90045C59D /* AppDelegate.swift */; };
 		1A9DC9512087DDE90045C59D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9DC9502087DDE90045C59D /* ViewController.swift */; };
 		1A9DC9542087DDE90045C59D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A9DC9522087DDE90045C59D /* Main.storyboard */; };
@@ -21,6 +23,8 @@
 
 /* Begin PBXFileReference section */
 		1A97A5012093DBAB002BA274 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		1A97A5032093E7CC002BA274 /* Brain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brain.swift; sourceTree = "<group>"; };
+		1A97A50820966B1D002BA274 /* Wolfram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wolfram.swift; sourceTree = "<group>"; };
 		1A9DC94B2087DDE90045C59D /* Hangman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hangman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A9DC94E2087DDE90045C59D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1A9DC9502087DDE90045C59D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -53,6 +57,13 @@
 			path = ApiResponses;
 			sourceTree = "<group>";
 		};
+		1A97A50520966115002BA274 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		1A9DC9422087DDE90045C59D = {
 			isa = PBXGroup;
 			children = (
@@ -72,6 +83,7 @@
 		1A9DC94D2087DDE90045C59D /* Hangman */ = {
 			isa = PBXGroup;
 			children = (
+				1A97A50520966115002BA274 /* Resources */,
 				1A9DC9602087DDFC0045C59D /* App */,
 				1A9DC94E2087DDE90045C59D /* AppDelegate.swift */,
 				1A9DC9502087DDE90045C59D /* ViewController.swift */,
@@ -99,6 +111,8 @@
 				1A9DC9652087DEC80045C59D /* Hangman.swift */,
 				1A9DC9692087DF3A0045C59D /* Words.swift */,
 				1A9DC9672087DED30045C59D /* Player.swift */,
+				1A97A5032093E7CC002BA274 /* Brain.swift */,
+				1A97A50820966B1D002BA274 /* Wolfram.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -176,8 +190,10 @@
 			files = (
 				1A97A5022093DBAB002BA274 /* GameState.swift in Sources */,
 				1A9DC9622087DE230045C59D /* Api.swift in Sources */,
+				1A97A5042093E7CC002BA274 /* Brain.swift in Sources */,
 				1A9DC9512087DDE90045C59D /* ViewController.swift in Sources */,
 				1A9DC9662087DEC80045C59D /* Hangman.swift in Sources */,
+				1A97A50920966B1D002BA274 /* Wolfram.swift in Sources */,
 				1A9DC96A2087DF3A0045C59D /* Words.swift in Sources */,
 				1A9DC9682087DED30045C59D /* Player.swift in Sources */,
 				1A9DC94F2087DDE90045C59D /* AppDelegate.swift in Sources */,
