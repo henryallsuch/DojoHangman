@@ -13,6 +13,7 @@ class Player {
     let credentials = ["username": "jazz", "password": "apple"]
     
     var brain : Brain = Brain()
+    var wolfram : Wolfram = Wolfram()
     
     func play(_ game : Hangman) {
     
@@ -27,7 +28,6 @@ class Player {
     
     func parseGameState(_ gameState : GameState){
         
-      
         if(gameState.won == false && gameState.complete == false){
             
             let letterCount = gameState.progress.count
@@ -37,7 +37,6 @@ class Player {
             if((letterCount - nilCount < 3)) {
                 
                 let letterToGuess = self.brain.nextOptimalGuess(forCount: letterCount, exluding: gameState.lettersGuessed)
-                
                 
                 print("Guessing: " + letterToGuess)
                 
@@ -53,6 +52,9 @@ class Player {
             } else {
                 // use wolfram
                 print("wolfram")
+                
+                self.wolfram.dictionaryLookup(input: gameState.progress)
+                
             }
             
         } else if(gameState.won == false && gameState.complete == true){
