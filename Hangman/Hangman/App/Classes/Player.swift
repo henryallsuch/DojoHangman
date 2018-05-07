@@ -27,37 +27,44 @@ class Player {
     
     func parseGameState(_ gameState : GameState){
         
-        let letterCount = gameState.progress.count
-        
-        let nilCount = gameState.progress.reduce(0) { $0 + ($1 == nil ? 1 : 0) }
-        
-        if(nilCount == letterCount){
+      
+        if(gameState.won == false && gameState.complete == false){
             
-             let letterToGuess = self.brain.optimalGuess(forLetterCount: letterCount)
+            let letterCount = gameState.progress.count
             
-            currentGame?.makeAGuess(letterToGuess)
+            let nilCount = gameState.progress.reduce(0) { $0 + ($1 == nil ? 1 : 0) }
             
-        } else {
+            if((letterCount - nilCount < 3)) {
+                
+                let letterToGuess = self.brain.nextOptimalGuess(forCount: letterCount, exluding: gameState.lettersGuessed)
+                
+                
+                print("Guessing: " + letterToGuess)
+                
+                if(letterToGuess != ""){
+                    
+                    currentGame?.makeAGuess(letterToGuess)
+                    
+                } else {
+                    
+                    print("run out of optimal letters")
+                    
+                }
+            } else {
+                // use wolfram
+                print("wolfram")
+            }
             
-            print("got a letter!")
+        } else if(gameState.won == false && gameState.complete == true){
+            
+             print("game over")
+            
+        } else if(gameState.won == true){
+            
+            print("won!")
             
         }
         
-//        if(currentGame.misses == 0 or nilCount = letterCount){
-//
-//           let letterToGuess = self.brain.optimalGuess(forLetterCount: letterCount)
-//
-//        } else {
-//
-//        }
-        // self.brain.makeAGuess()
     }
-//    
-//    func makeAGuess(){
-//        
-//        currentGame?.makeAGuess(self.brain.generateGuess())
-//        
-//    }
-    
-    
+
 }

@@ -29,17 +29,23 @@ class Brain {
 
     ]
     
-    func optimalGuess(forLetterCount: Int) -> String {
+    func nextOptimalGuess(forCount: Int, exluding : [String]) -> String {
         
-        return optimalCallingOrder[forLetterCount][0]
+        let optimalLetters = Set(optimalCallingOrder[forCount])
+        
+        let remainingLetters = optimalLetters.subtracting(Set(exluding))
+        
+        if remainingLetters.count > 0 {
+            return remainingLetters.first!
+        } else {
+            
+            //todo maybe throw here?
+            return ""
+        }
+    
+        
     }
     
-    func generateGuess() -> Character {
-        
-        let firstGuess:Character = "a"
-        return firstGuess
-    }
-    
-    
+
     
 }

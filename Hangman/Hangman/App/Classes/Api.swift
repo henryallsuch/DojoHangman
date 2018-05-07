@@ -64,24 +64,7 @@ class Api {
                     
                     (responseData: Any?) in
                     
-                    if let debugString = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
-                        print(debugString)
-                    }
-                    
-                    let decoder = JSONDecoder()
-                    
-                    let currentGame = try decoder.decode(GameState.self, from: responseData as! Data)
-                    
-                    do {
-
-                        try successCallback(currentGame)
-
-                    } catch {
-                        print("failed to call success callback")
-                        print(error)
-
-                    }
-                    
+                    self.decodeGameStateFromData(responseData as! Data, successCallback)
                     
                 })
             }
@@ -96,24 +79,7 @@ class Api {
                 
                 (responseData: Any?) in
                 
-                if let debugString = String(data: responseData as! Data, encoding: String.Encoding.utf8) {
-                    print(debugString)
-                }
-                
-                let decoder = JSONDecoder()
-                
-                let currentGame = try decoder.decode(GameState.self, from: responseData as! Data)
-                
-                do {
-                    
-                    try successCallback(currentGame)
-                    
-                } catch {
-                    print("failed to call success callback")
-                    print(error)
-                    
-                }
-                
+                self.decodeGameStateFromData(responseData as! Data, successCallback)
                 
             })
         }
@@ -129,25 +95,41 @@ class Api {
             let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
             
             let requestBody = postData as Data
-            if let guessUrl = NSURL(string: apiUrl + "game/current" ) {
+            if let guessUrl = NSURL(string: apiUrl + "games/current" ) {
                 
                 self.makeRequest(method: "PATCH", url: guessUrl, body: requestBody, onSuccess: {
                     (responseData:Any?) in
-                    do {
-                        try successCallback(responseData!)
-                    } catch {
-                        print("callback failed")
-                        print(error)
-                        
-                    }
+                    
+                    self.decodeGameStateFromData(responseData as! Data, successCallback)
                     
                 })
             }
             
         } catch {
-            print("failed to parse json")
+            print("failed to create request json")
         }
         
+    }
+    
+    func decodeGameStateFromData(_ rawData: Data, _ successCallback : @escaping ClosureType ){
+        
+        if let debugString = String(data: rawData, encoding: String.Encoding.utf8) {
+            print(debugString)
+        }
+        
+        let decoder = JSONDecoder()
+        
+        do {
+            
+            let currentGame = try decoder.decode(GameState.self, from: rawData)
+            
+            try successCallback(currentGame)
+            
+        } catch {
+            print("failed to call success callback")
+            print(error)
+            
+        }
     }
     
     func makeRequest( method :String, url : NSURL, body : Data?, onSuccess successCallback : @escaping ClosureType ){
