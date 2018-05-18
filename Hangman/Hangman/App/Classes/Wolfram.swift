@@ -22,6 +22,7 @@ struct wordPuzzlePod : Codable {
     var plaintext : String
 }
 
+typealias ClosureTypeReturningStringArray = (_ responseData:[String]) throws -> Void
 
 class Wolfram {
     
@@ -29,7 +30,7 @@ class Wolfram {
     let apiUrl = "https://api.wolframalpha.com/v2/query"
     
     
-    func dictionaryLookup( input : [String?]){
+    func dictionaryLookup( input : [String?], onSuccess successCallback : @escaping ClosureTypeReturningStringArray){
         
         var urlComponents = URLComponents(string: apiUrl)
         
@@ -52,18 +53,24 @@ class Wolfram {
                     return
                 }
                 
-                if let debugString = String(data: data!, encoding: String.Encoding.utf8) {
-                    print(debugString)
-                }
+//                if let debugString = String(data: data!, encoding: String.Encoding.utf8) {
+//                    print(debugString)
+//                }
                 
                 let decoder = JSONDecoder()
                 
                 do {
                     
-                    let wordPuzzle = try decoder.decode(wolframResponse.self, from: data!)
+                    let response = try decoder.decode(wolframResponse.self, from: data!)
     
-                    print(wordPuzzle)
-                    //try successCallback(data)
+                    let clues = response.queryresult.pods[0].subpods[0].plaintext
+                    
+                    let letters = self.getUniqueLettersFromWordPuzzle(clue: clues)
+                    
+                    print(letters)
+                    
+                    try successCallback(letters)
+                  
                 
                } catch {
                     print("decoding json failed")
@@ -77,16 +84,18 @@ class Wolfram {
         
         }
     
-//    func formatArrayToRequestParam(params:[String]) -> String? {
-//
-//     let queryItems = []
-//
-//        URLQueryItem(name:"input", value:"wlyOF7TM8Y3tn19KUdlq")
-//
-//        params.
-//        guard let encodedQuery = query.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()) else {
-//            return nil
-//        }
-//    }
+    func getUniqueLettersFromWordPuzzle(clue : String) -> [String] {
+        
+        let components = clue.components(separatedBy: "|").compactMap({ (rawLetter: String) -> String? in
+            
+            let letter = rawLetter.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            return  letter.count == 1 ? letter : nil
+            
+        })
+        
+        return Array(Set(components))
+        
+    }
     
 }

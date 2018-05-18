@@ -9,13 +9,14 @@ class Hangman {
     
     let api = Api()
     
-    var misses:[Character] = []
-    var hits = [Int: String]()
+    public var misses:[String] = []
+    public var progress: [String?] = []
     let console : ViewController
     
     var currentPlayer : Player? = nil
     
     public var wordLength : Int = 0
+    public var lettersLeftToGuess = 0;
     
     init(console : ViewController) {
         
@@ -28,13 +29,11 @@ class Hangman {
 
         if(api.token == ""){
             
-            self.console.logToView("Attempting login..");
-            
             currentPlayer = player
             
             api.login(player.credentials, onSuccess: {_ in
                 
-                self.console.logToView("Success!");
+                
                 do {
                     try successCallback()
                     
@@ -65,7 +64,8 @@ class Hangman {
         
         api.currentGame(onSuccess: {
             (gameState : Any?) in
-        
+            
+            
             self.parseGameState(gameState)
             
         })
@@ -86,6 +86,8 @@ class Hangman {
     }
     
     func makeAGuess(_ Letter : String)  {
+        
+        self.console.logToView("Guessing : \(Letter)");
         
         api.makeAGuess(String(Letter), onSuccess: {
             (gameState:Any?) in

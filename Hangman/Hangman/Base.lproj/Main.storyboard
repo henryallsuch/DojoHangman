@@ -35,6 +35,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <outlet property="console" destination="CbC-Ln-P5O" id="UIX-ie-cay"/>
                     </connections>

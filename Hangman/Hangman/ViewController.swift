@@ -36,6 +36,8 @@ class ViewController: UIViewController {
     
     func logGameState(_ currentGame: GameState){
         
+        logToView("Current Game: ")
+        
         for letterToGuess in currentGame.progress {
             if(letterToGuess == nil){
                 logToView(" _ ", clearAllText: nil, newLine: nil)
